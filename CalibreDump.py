@@ -52,5 +52,36 @@ class CalibreDump:
         span_tags = soap.findAll('span')
 
         for span in span_tags:
-            if re.search('Books \d+ to \d+ of \d+', span.text):
+            if re.search('Books \\d+ to \\d+ of \\d+', span.text):
                 return str(span.text).split('of')[1].strip()
+
+
+    @staticmethod
+    def get_books_link(ip_port, library_name, multiple, max=None):
+        n_books = int(CalibreDump.get_total_books(ip_port, library_name))
+
+        if max is None:
+            difference_next_multiple = multiple - (n_books % multiple)
+            if difference_next_multiple == multiple:
+                difference_next_multiple = 0
+            major_number_it = (n_books + difference_next_multiple) // 25
+        else:
+            difference_next_multiple = multiple - (max % multiple)
+            if difference_next_multiple == multiple:
+                difference_next_multiple = 0
+            major_number_it = (max + difference_next_multiple) // 25
+
+        books_links = []
+
+        for i in range(major_number_it):
+            start = multiple * i + 1
+            request = requests.get(f'http://{ip_port}/mobile?sort=timestamp&library_id={library_name}&num={n_books}&order=descending&start={start}')
+            soap = BeautifulSoup(request.text, features='html.parser')
+
+            links_soap = soap.findAll('a', attrs={'href' : re.compile('\\.epub|\\.pdf|\\.mobi')})
+
+            for link in links_soap:
+                download_link = f'{ip_port}{link.get("href")}'
+                books_links.append(download_link)
+
+        return books_links
