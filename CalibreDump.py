@@ -2,6 +2,8 @@ import requests
 import shodan
 from bs4 import BeautifulSoup
 import re
+import os
+import wget
 
 
 class CalibreDump:
@@ -55,6 +57,23 @@ class CalibreDump:
             if re.search('Books \\d+ to \\d+ of \\d+', span.text):
                 return str(span.text).split('of')[1].strip()
 
+    @staticmethod
+    def download_books(ip_port, library_name, max=None):
+        download_links = CalibreDump.get_books_link(ip_port, library_name, 25, max)
+
+        directory_ip = str(ip_port).split(':')[0]
+        directory_name = f'{directory_ip}-{library_name}'
+
+        try:
+            os.mkdir(f'./{directory_name}')
+        except FileExistsError:
+            print()
+
+        for link in download_links:
+            try:
+                wget.download(link, directory_name)
+            except:
+                continue
 
     @staticmethod
     def get_books_link(ip_port, library_name, multiple, max=None):
@@ -75,13 +94,14 @@ class CalibreDump:
 
         for i in range(major_number_it):
             start = multiple * i + 1
-            request = requests.get(f'http://{ip_port}/mobile?sort=timestamp&library_id={library_name}&num={n_books}&order=descending&start={start}')
+            request = requests.get(
+                f'http://{ip_port}/mobile?sort=timestamp&library_id={library_name}&num={n_books}&order=descending&start={start}')
             soap = BeautifulSoup(request.text, features='html.parser')
 
-            links_soap = soap.findAll('a', attrs={'href' : re.compile('\\.epub|\\.pdf|\\.mobi')})
+            links_soap = soap.findAll('a', attrs={'href': re.compile('\\.epub|\\.pdf|\\.mobi')})
 
             for link in links_soap:
-                download_link = f'{ip_port}{link.get("href")}'
+                download_link = f'http://{ip_port}{link.get("href")}'
                 books_links.append(download_link)
 
         return books_links

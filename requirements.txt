@@ -1,3 +1,4 @@
+wget
 beautifulsoup4
 requests
 shodan
