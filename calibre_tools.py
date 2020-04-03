@@ -24,11 +24,15 @@ class CalibreTools:
         soap = BeautifulSoup(request.text, features='html.parser')
 
         library_div = soap.find('div', attrs={'id': 'choose_library'})
-        results = library_div.find_all_next('option')
+        try:
+            results = library_div.find_all_next('option')
 
-        for result in results:
-            library = str(result.text).replace(' ', '_')
-            libraries.append(library)
+            for result in results:
+                library = str(result.text).replace(' ', '_')
+                libraries.append(library)
+        except AttributeError:
+            # will work because calibre accepts any string and redirects to the library that exists
+            libraries.append("random")
 
         return libraries
 
