@@ -1,6 +1,8 @@
 import requests
 import shodan
 from bs4 import BeautifulSoup
+import re
+
 
 class CalibreDump:
     def __init__(self, shodan_key):
@@ -41,3 +43,14 @@ class CalibreDump:
             libraries.append(library)
 
         return libraries
+
+    @staticmethod
+    def get_total_books(ip_port, library_name):
+        request = requests.get(f'http://{ip_port}/mobile?library_id={library_name}')
+        soap = BeautifulSoup(request.text, features='html.parser')
+
+        span_tags = soap.findAll('span')
+
+        for span in span_tags:
+            if re.search('Books \d+ to \d+ of \d+', span.text):
+                return str(span.text).split('of')[1].strip()
