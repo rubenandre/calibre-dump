@@ -2,6 +2,19 @@
 
 Find Calibre Servers. Download books from unauthenticated ones.
 
+## Dependencies:
+- Colorama: Colors to terminal
+- Wget: Download files
+- BeatifulSoap4: Parse html pages
+- Requests: Make requests to get the html of pages
+- Shodan: Find calibre servers
+
+## Install Dependencies:
+````shell script
+pip install -r requirements.txt
+````
+##
+
 **Get Hosts that use calibre:**
 ````shell script
 python3 main.py -s <API_KEY>
