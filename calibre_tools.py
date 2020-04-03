@@ -1,26 +1,12 @@
-import requests
-import shodan
-from bs4 import BeautifulSoup
-import re
 import os
+import re
+
+import requests
 import wget
+from bs4 import BeautifulSoup
 
 
-class CalibreDump:
-    def __init__(self, shodan_key):
-        self.api = shodan.Shodan(shodan_key)
-        self.hosts = []
-
-    def find_calibre_hosts(self):
-        try:
-            results = self.api.search('calibre')
-
-            for result in results['matches']:
-                self.hosts.append(f"{result['ip_str']}:{result['port']}")
-
-        except shodan.APIError as e:
-            print(f'Error {e}')
-
+class CalibreTools:
     @staticmethod
     def check_open(ip_port):
         dorks = ['/interface-data/init', '/browse/categories/allbooks']
@@ -59,7 +45,7 @@ class CalibreDump:
 
     @staticmethod
     def download_books(ip_port, library_name, max=None):
-        download_links = CalibreDump.get_books_link(ip_port, library_name, 25, max)
+        download_links = CalibreTools.get_books_link(ip_port, library_name, 25, max)
 
         directory_ip = str(ip_port).split(':')[0]
         directory_name = f'{directory_ip}-{library_name}'
@@ -77,7 +63,7 @@ class CalibreDump:
 
     @staticmethod
     def get_books_link(ip_port, library_name, multiple, max=None):
-        n_books = int(CalibreDump.get_total_books(ip_port, library_name))
+        n_books = int(CalibreTools.get_total_books(ip_port, library_name))
 
         if max is None:
             difference_next_multiple = multiple - (n_books % multiple)
