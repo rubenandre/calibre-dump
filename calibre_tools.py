@@ -65,16 +65,13 @@ class CalibreTools:
     def get_books_link(ip_port, library_name, multiple, max=None):
         n_books = int(CalibreTools.get_total_books(ip_port, library_name))
 
-        if max is None:
-            difference_next_multiple = multiple - (n_books % multiple)
-            if difference_next_multiple == multiple:
-                difference_next_multiple = 0
-            major_number_it = (n_books + difference_next_multiple) // 25
-        else:
-            difference_next_multiple = multiple - (max % multiple)
-            if difference_next_multiple == multiple:
-                difference_next_multiple = 0
-            major_number_it = (max + difference_next_multiple) // 25
+        if max is not None:
+            n_books = max
+
+        difference_next_multiple = multiple - (n_books % multiple)
+        if difference_next_multiple == multiple:
+            difference_next_multiple = 0
+        major_number_it = (n_books + difference_next_multiple) // 25
 
         books_links = []
 

@@ -16,5 +16,6 @@ def print_warning(message):
 def print_step(message):
     print(f'{Fore.BLUE}[*] - {message}{Style.RESET_ALL}')
 
+
 def print_finish(message):
     print(f'{Fore.GREEN}[Finish *] - {message}{Style.RESET_ALL}')
