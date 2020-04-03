@@ -1,3 +1,4 @@
+colorama
 wget
 beautifulsoup4
 requests
